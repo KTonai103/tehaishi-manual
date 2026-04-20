@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心臓血管外科 手配師マニュアル</title>
+<style>
+  :root {
+    --sidebar-width: 260px;
+    --header-height: 56px;
+    --accent: #1a6bb0;
+    --accent-light: #e8f0fa;
+    --bg: #f7f8fa;
+    --text: #1a1a2e;
+    --border: #dde1e9;
+    --table-header: #2c4a7c;
+    --warning: #c0392b;
+    --note: #7f6000;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Sans', 'Meiryo', 'Yu Gothic', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; }
+
+  /* ===== TOP BAR ===== */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+    background: var(--table-header); color: #fff; display: flex; align-items: center;
+    padding: 0 16px; z-index: 200; gap: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  #topbar h1 { font-size: 15px; font-weight: 700; flex: 1; }
+  #menu-toggle { background: none; border: none; color: #fff; cursor: pointer; padding: 6px; font-size: 22px; line-height: 1; }
+
+  /* Search bar */
+  #search-wrap { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,.15); border-radius: 6px; padding: 2px 8px; }
+  #search-input { background: none; border: none; color: #fff; font-size: 13px; width: 140px; outline: none; }
+  #search-input::placeholder { color: rgba(255,255,255,.6); }
+  #search-nav { display: flex; gap: 2px; }
+  #search-nav button { background: none; border: none; color: #fff; cursor: pointer; font-size: 14px; padding: 2px 4px; opacity: .8; }
+  #search-nav button:hover { opacity: 1; }
+  #search-count { font-size: 11px; color: rgba(255,255,255,.7); white-space: nowrap; min-width: 40px; }
+  mark.search-hl { background: #ffe066; color: #000; border-radius: 2px; }
+  mark.search-hl.current { background: #ff7700; color: #fff; }
+
+  /* ===== SIDEBAR ===== */
+  #sidebar {
+    position: fixed; top: var(--header-height); left: 0; bottom: 0;
+    width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--border);
+    overflow-y: auto; z-index: 150; transition: transform .25s ease;
+    padding: 12px 0 40px;
+  }
+  #sidebar.hidden { transform: translateX(calc(-1 * var(--sidebar-width))); }
+  #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 140; }
+  #overlay.visible { display: block; }
+
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: #888; padding: 14px 16px 4px; margin-top: 4px;
+  }
+  #sidebar a {
+    display: block; padding: 7px 16px 7px 20px; color: #333; text-decoration: none;
+    font-size: 13px; border-left: 3px solid transparent; transition: all .15s;
+  }
+  #sidebar a:hover, #sidebar a.active { color: var(--accent); background: var(--accent-light); border-left-color: var(--accent); }
+
+  /* ===== MAIN ===== */
+  #main {
+    margin-left: var(--sidebar-width); margin-top: var(--header-height);
+    padding: 32px 36px 60px; max-width: 900px; transition: margin .25s ease;
+  }
+  #main.full { margin-left: 0; }
+
+  /* Headings */
+  h1.page-title { font-size: 22px; font-weight: 800; color: var(--table-header); margin-bottom: 4px; }
+  .updated { font-size: 12px; color: #888; margin-bottom: 28px; }
+  h2 { font-size: 19px; font-weight: 700; color: var(--table-header); margin: 36px 0 14px;
+       border-bottom: 2px solid var(--accent); padding-bottom: 6px; scroll-margin-top: calc(var(--header-height) + 8px); }
+  h3 { font-size: 15px; font-weight: 700; color: #1a3a5c; margin: 20px 0 8px; scroll-margin-top: calc(var(--header-height) + 8px); }
+  h4 { font-size: 14px; font-weight: 700; margin: 14px 0 6px; }
+
+  /* Text */
+  p { margin: 8px 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  strong { color: #1a1a2e; }
+  em { font-style: normal; color: var(--warning); font-weight: 600; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin: 12px 0; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; min-width: 100%; font-size: 13.5px; }
+  th { background: var(--table-header); color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+  td { padding: 7px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f0f4fa; }
+  tr:hover td { background: var(--accent-light); }
+
+  /* Code blocks */
+  pre { background: #1e2a3a; color: #cdd7e8; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin: 12px 0; white-space: pre-wrap; word-break: break-all; }
+  code { font-family: 'Menlo', 'Courier New', monospace; font-size: 12.5px; }
+
+  /* Warning / note boxes */
+  .warn { background: #fef0ef; border-left: 4px solid var(--warning); padding: 10px 14px; border-radius: 4px; margin: 10px 0; font-size: 13.5px; }
+  .note { background: #fffbea; border-left: 4px solid #e6ac00; padding: 10px 14px; border-radius: 4px; margin: 10px 0; font-size: 13.5px; }
+
+  /* hr */
+  hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  /* Deadline badge */
+  .badge { display: inline-block; background: var(--warning); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
+
+  /* Back to top */
+  #back-top { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff;
+    border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 20px; cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,.25); display: none; z-index: 300; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(calc(-1 * var(--sidebar-width))); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 20px 16px 60px; }
+  }
+  @media (min-width: 769px) {
+    #menu-toggle { display: none; }
+    #sidebar { transform: translateX(0) !important; }
+    #sidebar.hidden { transform: translateX(calc(-1 * var(--sidebar-width))); }
+    #main.full { margin-left: 0; }
+    #main:not(.full) { margin-left: var(--sidebar-width); }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <button id="menu-toggle" onclick="toggleSidebar()" aria-label="メニュー">☰</button>
+  <h1>🏥 心臓血管外科 手配師マニュアル</h1>
+  <div id="search-wrap">
+    <span style="font-size:14px;opacity:.7">🔍</span>
+    <input id="search-input" type="text" placeholder="キーワード検索..." autocomplete="off">
+    <span id="search-count"></span>
+    <div id="search-nav">
+      <button onclick="moveMatch(-1)" title="前へ">▲</button>
+      <button onclick="moveMatch(1)" title="次へ">▼</button>
+      <button onclick="clearSearch()" title="クリア">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-section-label">基本業務</div>
+  <a href="#flow-day">1日の流れ</a>
+  <a href="#flow-week">1週間の流れ</a>
+  <a href="#main-tasks">主な業務</a>
+  <a href="#schedule">予定調整</a>
+
+  <div class="sidebar-section-label">入院関連</div>
+  <a href="#patient-contact">患者連絡・入院予定登録</a>
+  <a href="#admission">入院処理</a>
+  <a href="#morning-conf">朝カンファ準備</a>
+  <a href="#admission-orders">入院時検査・指示</a>
+
+  <div class="sidebar-section-label">検査・手術</div>
+  <a href="#other-dept">他科外来予約</a>
+  <a href="#preop-exams">術前検査オーダー</a>
+  <a href="#surgery-booking">手術申し込み</a>
+  <a href="#surgery-orders">手術関連検査オーダー</a>
+
+  <div class="sidebar-section-label">緊急対応</div>
+  <a href="#emergency">緊急手術対応</a>
+  <a href="#oncall">当直中・緊急受診依頼対応</a>
+
+  <div class="sidebar-section-label">連絡先・その他</div>
+  <a href="#contacts">連絡先一覧</a>
+  <a href="#misc">その他</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+  <h1 class="page-title">大阪大学医学部附属病院 心臓血管外科 手配師マニュアル</h1>
+  <p class="updated">最終更新: 2025/9/19（補記: 2026/4/20）</p>
+
+  <!-- ==================== 1日の流れ ==================== -->
+  <h2 id="flow-day">1日の流れ</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>時刻</th><th>業務</th></tr>
+      <tr><td>7:40</td><td>ICU申し送り → カンファ（事前準備しておく）</td></tr>
+      <tr><td>9:30</td><td>緊急手術申込</td></tr>
+      <tr><td>10:00</td><td>予定入院 → 昼過ぎに持参薬登録</td></tr>
+    </table>
+  </div>
+  <div class="note">転院は午前なら <strong>11:00</strong>、午後なら <strong>14:00</strong> がデフォルト</div>
+
+  <!-- ==================== 1週間の流れ ==================== -->
+  <h2 id="flow-week">1週間の流れ</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th></th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th></tr>
+      <tr>
+        <td><strong>カンファ</strong></td>
+        <td>術前カンファ（水曜症例）</td>
+        <td>術前カンファ（木・金症例）※第1週は3外科合同</td>
+        <td>医局会</td>
+        <td>術後カンファ（前週分）</td>
+        <td>術前カンファ（月・火症例）</td>
+      </tr>
+      <tr>
+        <td><strong>オペ枠（成人）</strong></td>
+        <td>○</td><td>—</td><td>○ ※</td><td>—</td><td>○ ※</td>
+      </tr>
+      <tr>
+        <td><strong>オペ枠（血管OR1）</strong></td>
+        <td>—</td><td>○</td><td>—</td><td>○</td><td>—</td>
+      </tr>
+      <tr>
+        <td><strong>オペ枠（小児/血管）</strong></td>
+        <td>—</td><td>—</td><td>—</td><td>○</td><td>○</td>
+      </tr>
+    </table>
+  </div>
+  <div class="note">
+    ※ 3週毎にお休み（Happy week）→ 半年ごとの麻酔・手術枠表を確認<br>
+    ※ 末梢血管は枠が不確定 → 三宅先生に都度確認
+  </div>
+
+  <h3>月曜</h3>
+  <ul>
+    <li>朝：ICU申し送り後、CVCU回診あり</li>
+    <li>夜：血管カンファ（手配師参加：不要）</li>
+  </ul>
+
+  <h3>木曜</h3>
+  <ul>
+    <li>夕：成人カンファ（手配師参加：要）→ 大体16時、昼過ぎに吉岡先生に確認</li>
+    <li>→ 成人全体、MEさん（51736753）に電話</li>
+  </ul>
+
+  <!-- ==================== 主な業務 ==================== -->
+  <h2 id="main-tasks">主な業務</h2>
+  <ul>
+    <li>スケジュール調整
+      <ul>
+        <li>手術予定：成人は予め組んで吉岡先生に確認、血管は島村先生が決定、小児は血管との兼ね合いで決定、末梢血管は他との兼ね合いで決定</li>
+        <li>入院調整：基本、手術の2営業日前</li>
+      </ul>
+    </li>
+    <li>カードの把握：病状・内服薬（特に抗血小板・抗凝固・DM薬）、入院支援記録（Tree view → 入退院管理等、問診票でアレルギーや内服薬確認）、入院予定登録から個室希望確認</li>
+    <li>手術入力（〆切：3営業日前の午前11時 ※基本4営業日前に済ませる）</li>
+    <li>術後検査オーダー</li>
+    <li>入院時持参薬登録（薬剤師鑑別後に、入院当日の持参薬服用指示と翌日からのDo処方）</li>
+    <li>電話対応：患者・他科・他院からの依頼、転院・情報提供</li>
+    <li>朝カンファの準備</li>
+    <li>手術リストチェック（術前：週末、術後：週明け）※事務補佐さんが事前作成</li>
+  </ul>
+
+  <!-- ==================== 予定調整 ==================== -->
+  <h2 id="schedule">予定調整</h2>
+
+  <h3>手術日程・入院決定フロー</h3>
+  <p>手術日程決定 → 入院日決定</p>
+
+  <h3>入院ルール</h3>
+  <ul>
+    <li>1日4人まで（個室・男子部屋・女子部屋に注意）</li>
+    <li>透析患者は同時に5人まで（緊急入院考慮し、なるべく4枠以下で運用）</li>
+    <li>基本10時入院。遠方の場合は午後入院も可。持参薬履歴がある人は休日入院も可</li>
+    <li>西9師長と相談しながらベッドコントロール</li>
+  </ul>
+
+  <h3>手術症例のスケジュール確認タイミング</h3>
+  <ul>
+    <li>翌週分 → 週前半に再確認</li>
+    <li>翌々週分 → 週後半までにおおよそ確定</li>
+  </ul>
+  <div class="warn"><strong>早めに入院させる症例（要注意）</strong>：ヘパリン置換、血糖コントロール、TEE含め術前検査不足症例 等</div>
+
+  <!-- ==================== 患者連絡 ==================== -->
+  <h2 id="patient-contact">患者連絡・入院予定登録</h2>
+
+  <h3>患者連絡のタイミング</h3>
+  <p>基本1週間前（カンファのタイミング等にもよる。早めに連絡すべき症例は事前把握）</p>
+
+  <h3>患者連絡時の確認事項</h3>
+  <p>以下の項目を患者に確認し、カルテ記録を行う（患者手配業務提携簿の定型文を使用）：</p>
+  <ul>
+    <li><strong>アレルギー歴</strong>（薬物・食物・喘息）</li>
+    <li><strong>抗血小板薬・抗凝固薬の内服確認と休薬指示</strong></li>
+    <li><strong>糖尿病治療薬の確認</strong></li>
+    <li><strong>術前歯科外来受診について</strong>：抜歯の可能性があることも説明</li>
+    <li><strong>入院時間</strong>：9〜10時に1階入退院センターへ来てもらうよう伝える</li>
+    <li><strong>部屋希望</strong>：入院時説明で案内されているが、再度個室か大部屋かを確認する</li>
+  </ul>
+
+  <h3>患者連絡フォーマット（手術入院の連絡：本人携帯）</h3>
+  <pre>月日（）　入院
+月日（）　手術
+術前IC：入院後相談
+
+【内服薬】
+抗血小板薬：なし　月日より休薬を指示
+抗凝固薬：なし　　月日より休薬を指示
+糖尿病治療薬：なし
+免疫抑制剤：なし
+
+【生活歴】
+喫煙：有/無
+有の場合、禁煙を依頼した。
+ADL：自立
+認知機能：正常
+
+【アレルギー歴】
+薬物（-）　食物（-）　喘息（-）
+
+●部屋希望：個室：1等A（16500）　2等B（5500 1室のみ）or 総室
+個室がない場合は総室になることを説明し了承を得た。
+＊個室希望なし
+
+他患者の緊急手術等により日程変更の可能性があることを説明し了承を得た。
+入院時間（9〜10時に1階入退院センターに行くようお伝えした。）
+術前当院歯科にて抜歯の可能性があることも伝え、了承いただいた。</pre>
+
+  <h3>入院予定登録</h3>
+  <ol>
+    <li>入院日を確定させたら患者に電話し、日程で問題なければ入院予定登録を行う</li>
+    <li><strong>入院日の朝10時を入院予定</strong>とし、入院タブの「入院予定登録」から行う</li>
+    <li>患者に確認した総室希望・個室希望がコメントに入っているか確認する</li>
+    <li>入院予定の連絡を取ったら、<strong>バインダーのカードに各チームの色で付箋を貼る</strong></li>
+  </ol>
+
+  <!-- ==================== 入院処理 ==================== -->
+  <h2 id="admission">入院処理</h2>
+  <p>入院が決定したら、Excelの項目通りに進める。</p>
+
+  <h3>処理内容</h3>
+  <ul>
+    <li>入院予定登録</li>
+    <li>入院確認</li>
+    <li>入院時検査（001）</li>
+    <li>必要時指示（002：腎機能低下2024）</li>
+    <li>成人入院時指示（057）</li>
+    <li>他科コンサルト</li>
+  </ul>
+
+  <h3>他科コンサルト</h3>
+  <ul>
+    <li>紹介文作成 + 入院中外来予約</li>
+    <li>フォーマットあり</li>
+    <li><strong>〆切：当日朝8時30分まで</strong> <span class="badge">要注意</span></li>
+    <li>間に合わない場合：紹介状を作成した上で、各科外来に電話 → 外来医師に許可もらう → 外来に許可得たことを電話</li>
+    <li>再診時は入院中予約要</li>
+  </ul>
+
+  <!-- ==================== 朝カンファ準備 ==================== -->
+  <h2 id="morning-conf">朝カンファ準備</h2>
+  <ul>
+    <li>中央プロジェクターの電源・テレビの電源は<strong>早めにつけておく</strong></li>
+    <li>中央プロジェクターの入力：<strong>Computer1</strong></li>
+    <li>テレビの入力：DVI系</li>
+    <li>中央プロジェクターがHDMI入力になっていると謎の画面になるので、<strong>Computer1のボタンを押す</strong></li>
+  </ul>
+
+  <!-- ==================== 入院時検査・指示 ==================== -->
+  <h2 id="admission-orders">入院時検査・一般指示・必要時指示</h2>
+
+  <h3>入院時検査</h3>
+  <ul><li>フォルダから入力する</li></ul>
+
+  <h3>一般指示</h3>
+  <ul>
+    <li>フォルダから入力する</li>
+    <li><strong>開始時刻を入院日の朝10時に設定する</strong></li>
+  </ul>
+
+  <h3>必要時指示</h3>
+  <ul>
+    <li>フォルダから入力する</li>
+    <li>腎機能低下用と腎機能通常用があるが、<strong>基本的に腎機能低下用 + ロキソニン</strong>を入れておけば問題ない</li>
+    <li>手術関連ExcelにあるCVCUカリウム指示は、入院後に必要時フォルダからオーダーする</li>
+  </ul>
+
+  <h3>アーチ症例の術前精査</h3>
+  <ul>
+    <li>全例、MRI または造影CT による<strong>頭部精査</strong>が必要</li>
+    <li>頭部精査の日程も含めて入院を決定する</li>
+    <li>MRIは<strong>事務さんに言って友紘会総合病院に予約を取ってもらう</strong></li>
+  </ul>
+
+  <!-- ==================== 他科外来予約 ==================== -->
+  <h2 id="other-dept">他科外来予約</h2>
+
+  <h3>麻酔科</h3>
+  <ul>
+    <li><strong>入院中外来を優先</strong>する（術前外来より入院中からが優先）</li>
+    <li>麻酔科外来の前日12:30締め切り。3ヶ月以内の採血・Xp・ECGが必要</li>
+  </ul>
+
+  <h3>他科コンサルト共通</h3>
+  <ul>
+    <li>紹介部分の横の定型文ボタンから定型文を入力する</li>
+    <li>EVARの場合は<strong>EVAR用の定型文</strong>を使用する</li>
+  </ul>
+
+  <h3>透析患者</h3>
+  <div class="warn">
+    <strong>入院日決定前</strong>に、コミュニケートで<strong>腎臓内科 酒井先生にメール</strong>し、透析日程を調整
+  </div>
+  <ul>
+    <li>心臓外科の透析枠は<strong>5枠</strong>しかないため、酒井先生と相談（なるべく4枠以下で運用）</li>
+    <li>入院決定後、<strong>かかりつけ透析病院に連絡</strong>し、透析サマリ等を透析室にFAX依頼（06-6879-6049）</li>
+    <li>基本的に入院日の透析は不可（緊急を除く）のため、入院日・オペ日・透析日を調整</li>
+  </ul>
+
+  <h3>術前の抗血小板・抗凝固薬</h3>
+  <p>適宜Aクラスに確認。休薬期間は手配師横の資料参照</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>症例</th><th>方針</th></tr>
+      <tr><td>開心術</td><td>基本全て休薬</td></tr>
+      <tr><td>CAD/PCI後</td><td>SAPTのみ継続</td></tr>
+      <tr><td>カテーテル治療（deb TEVAR含む）</td><td>休薬不要のことも多い</td></tr>
+      <tr><td>RIBS</td><td>全休薬</td></tr>
+    </table>
+  </div>
+  <div class="note">
+    <strong>注意事項：</strong><br>
+    ・MICS前の傍脊椎ブロック（パラバー）やGR前の硬膜外麻酔（epi）は、より早めの休薬が必要<br>
+    ・胸腹部手術（オープンもPMEGも）はスパイナルドレナージを常に想定し、術前+1の休薬必要<br>
+    ・イコサペント酸エチル（7〜10日）、クロピドグレル（14日）等は特に長いので要注意
+  </div>
+
+  <h3>術前の糖尿病治療薬</h3>
+  <ul>
+    <li>休薬期間は手配師横の資料参照</li>
+    <li>術前（できれば1ヶ月前まで）に、紹介基準（手配師横の貼紙）に則って、糖内外来受診させる</li>
+    <li>未受診の場合：日未定で紹介状作成。本人に連絡し、午前11時までに各科外来へ直接受診</li>
+  </ul>
+
+  <!-- ==================== 術前検査オーダー ==================== -->
+  <h2 id="preop-exams">術前検査オーダー</h2>
+
+  <h3>術式別必要検査</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>チーム</th><th>必要検査</th></tr>
+      <tr><td>成人</td><td>採血、胸部Xp、心電図、心臓外科心エコー、頚動脈/グラフトエコー、冠動脈CT、胸腹部造影CT、頭部CT、ABI、Spiro（VCのみ）</td></tr>
+      <tr><td>血管</td><td>採血、胸部Xp、心電図、心エコー（LVEDV/LVESV/TRPGコメント記入）、頚動脈エコー、冠動脈CT、胸腹部造影CT、頭部/頸部MRI・MRA（主に友紘会order）、頭部CT、ABI ※大動脈瘤術前はSpiro禁止</td></tr>
+      <tr><td>TAVI</td><td>採血、胸部Xp（2方向）、心電図、阪大心エコー、頚動脈エコー、冠動脈CT、胸腹部造影CT、頭部CT、ABI、Spiro</td></tr>
+    </table>
+  </div>
+  <div class="note">
+    <strong>MR症例の注意：</strong><br>
+    ・Degenerative-MRで弁形成を要する症例 → 経食道心エコー（TEE）が必要<br>
+    ・Functional MR（ring形成のみ）→ 通常の阪大心エコーで可<br>
+    ・全例心臓CT必要（CAG済でも省略不可）
+  </div>
+
+  <h3>エコー</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>種別</th><th>予約先</th></tr>
+      <tr><td>心臓外科心エコー</td><td>心エコー室（5173-6610）/ 緊急・枠外は藤田さん（3748）</td></tr>
+      <tr><td>術前頚動脈評価</td><td>「超音波」→「頚部血管超音波」/ 枠なし時は5173-6823</td></tr>
+      <tr><td>CABG術前グラフト評価</td><td>フォルダ080手配師 → 004術前追加検査 → 血管超音波検査</td></tr>
+      <tr><td>経食道心エコー（TEE）</td><td><strong>竹田泰治Dr. へ院内メール</strong>（急ぐときは電話 i2818）</td></tr>
+      <tr><td>当直帯/緊急時</td><td>ハートコール（i7000）</td></tr>
+      <tr><td>友紘会エコー</td><td>火曜2枠/日、木曜4枠/日（木曜は上野先生担当）→ 事務補佐さんに依頼</td></tr>
+    </table>
+  </div>
+  <div class="note"><strong>TEE依頼の注意：</strong> 当院でTTEを施行してから依頼すること</div>
+
+  <h3>冠動脈/胸腹部造影CT</h3>
+  <ul>
+    <li>冠動脈CT：オープン予約</li>
+    <li>胸腹部造影CT：クローズ予約で日付指定（2〜3日の幅を持たせて）</li>
+    <li>複数部位撮像時：冠動脈CTオーダー後、クローズで他部位オーダー（コメントで日付指定）</li>
+    <li>撮像条件：手配師入院関連Excelの一番左タブからコピペ</li>
+    <li><strong>Severe AS：ニトロ（-）、他はニトロ（+）</strong></li>
+    <li>当日緊急：空き枠なければ虚血チーム枠（1日1枠）を確認 → 手配師横の当日緊急冠動脈CTの曜日毎Drの割り振りを確認し、当日になってから連絡</li>
+  </ul>
+
+  <h3>MRI</h3>
+  <ul>
+    <li>院内：基本クローズ予約（2〜3日の幅を持たせて）コメント欄で日付指定</li>
+    <li>ペースメーカー症例：院内イントラネット → 放射線部運用マニュアル → ペースメーカー装着者について（基本当日不可）</li>
+    <li>緊急MRI：2627</li>
+    <li>友紘会MRI：月火水金（外来は土曜amも可）→ 事務補佐さんに依頼
+      <ul>
+        <li>ペースメーカー症例：光野先生外来を通してから</li>
+        <li>大血管/TAVI術前の頭頸部MRI → MRAも</li>
+      </ul>
+    </li>
+    <li><strong>弓部分枝を操作する症例は術前・術後にMRI + 心エコー（友紘会エコー可）をオーダー</strong></li>
+  </ul>
+
+  <h3>心カテ（CAG/右心カテ）</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>種別</th><th>依頼先</th></tr>
+      <tr><td>右心カテ</td><td>赤澤先生に院内メール</td></tr>
+      <tr><td>RHC + α</td><td>①赤澤Dr.（i2002）②中村Dr.（i3728）に院内メール</td></tr>
+      <tr><td>CAG単独</td><td>①中村Dr.（i3728）②小杉Dr.（i7017）に院内メール / 直前は小杉先生に直接電話</td></tr>
+    </table>
+  </div>
+  <ul>
+    <li>カテ予定はE9の三好さん（PHS 3727）に確認、メールでCCに入れておく</li>
+    <li>FFR-CT（レポートにFFR-CT適応と記載の場合）：循内虚血担当Dr.に相談（事前に循内外来での同意書が必要）</li>
+  </ul>
+
+  <!-- ==================== 手術申し込み ==================== -->
+  <h2 id="surgery-booking">手術申し込み</h2>
+  <div class="warn">
+    <strong>〆切：3営業日前の午前11時</strong>（基本4営業日前に済ませる）<br>
+    〆切以降の変更・差替は麻酔科ライターとOP師長さんの電話許可が必要
+  </div>
+
+  <h3>枠の注意事項</h3>
+  <ul>
+    <li>MICS、DaVinci、redo手術は原則1日枠。MIDCAB＊は半日枠。小児のredoは0.7日枠扱い</li>
+    <li>人工心肺は2台まで。3台目は超緊急用</li>
+    <li>火曜・木曜は開心術 + OR3かOR2/7（人工心肺は1台まで）</li>
+    <li>手術部運営ルール：2例目以降の入室時間が下記を超えると当日急遽キャンセル
+      <ul>
+        <li>14時：開心術</li>
+        <li>16時：endo/TAVI</li>
+        <li>18時：局麻の小手術</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>申込項目</h3>
+
+  <h4>日時・時間</h4>
+  <ul>
+    <li>8:30〜16:45の間で帯を選択。手術の間は30分あける。小児は朝1例目</li>
+    <li>TAVI：8:45〜11:00 / 11:30〜14:00 / 14:30〜17:00</li>
+  </ul>
+
+  <h4>術式</h4>
+  <ul>
+    <li>Redoの場合は術式・コメントで明記</li>
+    <li>debranch TEVARは1/2/totalを明記</li>
+  </ul>
+
+  <h4>体位</h4>
+  <div class="table-wrap">
+    <table>
+      <tr><th>術式</th><th>体位</th></tr>
+      <tr><td>基本</td><td>仰臥位</td></tr>
+      <tr><td>MICS-A/M</td><td>左半側臥位</td></tr>
+      <tr><td>MICS CABG/MICS-LAAc/下行置換/TAAA</td><td>右半側臥位</td></tr>
+      <tr><td>PDA ligation</td><td>右側臥位（左が上）</td></tr>
+      <tr><td>PA banding</td><td>仰臥位</td></tr>
+    </table>
+  </div>
+
+  <h4>麻酔法</h4>
+  <ul>
+    <li>麻酔科依頼：全麻/ブロック→あり、静麻/局麻→なし</li>
+    <li>側開胸症例（TA-AVI, MICS, シート移植）：全麻 + 神経ブロック</li>
+    <li>開腹手術：全麻 + Epi</li>
+    <li>骨格筋採取：静脈麻酔 + 大腿神経ブロック</li>
+    <li>TAVI/EVAR/TEVAR：「全麻または局麻」（TAVIアプローチ部位や麻酔法は付箋参照）</li>
+  </ul>
+
+  <h4>希望手術室</h4>
+  <ul>
+    <li>TAVI/TEVAR/EVAR：OR1</li>
+    <li>PMEG：OR2（火曜は必ずハイブリッド手術室枠あり）</li>
+    <li>Harmony（TPVR）の場合：「出張」+フリーコメントに「OP室キープ」</li>
+  </ul>
+
+  <h4>術者</h4>
+  <ul>
+    <li>術者：ライター</li>
+    <li>内科TAVI → 受け持ち：松廣Dr. 術者：中村Dr.</li>
+  </ul>
+
+  <h4>入力責任者 / 問い合わせ連絡先</h4>
+  <p>「手配師名・7600」</p>
+
+  <h4>機器・コンテナ</h4>
+  <div class="table-wrap">
+    <table>
+      <tr><th>術式</th><th>必要機器</th></tr>
+      <tr><td>人工心肺症例</td><td>人工心肺、自己血回収装置</td></tr>
+      <tr><td>AVR（AS）</td><td>CUSA</td></tr>
+      <tr><td>AVR（Sutureless）</td><td>フレキシブルカメラ、カメラヘッド、ライトガイド</td></tr>
+      <tr><td>David</td><td>4mm 70° カメラ一式</td></tr>
+      <tr><td>Open MVP</td><td>カメラ（Storz）、カメラヘッド、ライトガイド、ストライクフロー</td></tr>
+      <tr><td>CABG/OPCAB</td><td>自己血回収装置（+人工心肺）、オクトパス、スターフィッシュ、ブロワー</td></tr>
+      <tr><td>MICS-CABG</td><td>上記 + カメラ（Storz）、カメラヘッド、ライトガイド、リガシュア（RITA取る時はクリスタルビジョン）</td></tr>
+      <tr><td>MICS MV / Robo MV</td><td>カメラ（Storz）、カメラヘッド、ライトガイド、ストライクフロー、透視装置、リガシュア、変形マット</td></tr>
+      <tr><td>MICS AV</td><td>カメラ（Storz）、カメラヘッド、ライトガイド、透視装置、リガシュア、変形マット</td></tr>
+      <tr><td>MICS LAAc</td><td>MICS MVの物品で、カメラはオリンパスのフレキシブルタイプの内視鏡</td></tr>
+      <tr><td>Maze</td><td>クライオアイス or AtriCure / AtriClip使用時は業者手配（小西医療機器）</td></tr>
+      <tr><td>VAD</td><td>リガシュア</td></tr>
+      <tr><td>心移植</td><td>バイオ</td></tr>
+      <tr><td>Redoの弁置換</td><td>ハーモニック</td></tr>
+      <tr><td>シート移植</td><td>変形マット、リガシュア、IABP</td></tr>
+      <tr><td>total debranch TEVAR</td><td>自己血回収装置</td></tr>
+      <tr><td>腹部GR</td><td>ロブスター開腹鈎、自己血回収装置</td></tr>
+      <tr><td>3B/4B</td><td>透視装置、自己血回収装置、マッケの台（透視可能な手術台）</td></tr>
+      <tr><td>下行置換/TAAA</td><td>自己血回収装置、人工心肺（要確認）、クライオアイス（要確認）、変形マット、ロブスター</td></tr>
+      <tr><td>EVAR/TEVAR/TAVI</td><td>なし</td></tr>
+    </table>
+  </div>
+  <div class="note"><strong>クライオアイスは手術部→業者に事前手配が必要</strong></div>
+
+  <h4>使用薬剤</h4>
+  <ul>
+    <li>フリーコメントで入力</li>
+    <li>抗生剤：CEZ 1g×2（小児はCEZ 1バイアルと記入）</li>
+    <li>アレルギー歴確認</li>
+    <li>大動脈/弁置換/形成時はホルマリン</li>
+    <li>TEVAR：ナロキソン9A</li>
+    <li>頚部分枝を操作するdebranching TEVAR：ソル・メドロール500mg</li>
+  </ul>
+
+  <h4>術中撮影</h4>
+  <p>「する」を選択</p>
+
+  <h4>硬膜外麻酔・神経ブロック</h4>
+  <ul>
+    <li>epi/CSFD/傍脊椎ブロックは緊急オーダー（師長さんには14時以降と伝える）</li>
+    <li>ヘパリンは6h前に中止（朝8時頃には止めておく）</li>
+    <li>傍脊柱管神経ブロック：留置部位を付箋に記載
+      <ul>
+        <li>MICS-AVR/MVP：右第4肋間</li>
+        <li>MICS-CABG：左第5肋間が多いが第6肋間の時も（術者に確認）</li>
+        <li>MICS-LAAc：左第5肋間（術者に確認）</li>
+      </ul>
+    </li>
+  </ul>
+
+  <!-- ==================== 手術関連検査オーダー ==================== -->
+  <h2 id="surgery-orders">手術関連検査オーダー</h2>
+
+  <h3>① 術中撮影</h3>
+  <ul>
+    <li>全例：胸部Xp</li>
+    <li>腹部症例/EVAR：胸部 + 腹部Xp</li>
+    <li>EVAR/TEVAR/TAVI/impella/MICS-AV or MV：術中透視</li>
+  </ul>
+
+  <h3>② 血液製剤（術式記入必要）</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>術式</th><th>RBC</th><th>FFP</th><th>PLT</th></tr>
+      <tr><td>Adult</td><td>16</td><td>16</td><td>0</td></tr>
+      <tr><td>MICS</td><td>12</td><td>12</td><td>0</td></tr>
+      <tr><td>Redo/LVAD</td><td>20</td><td>20</td><td>20</td></tr>
+      <tr><td>TAVI</td><td>6</td><td>0</td><td>0</td></tr>
+      <tr><td>TEVAR</td><td>8</td><td>0</td><td>0</td></tr>
+      <tr><td>deb-TEVAR</td><td>8</td><td>8</td><td>0</td></tr>
+      <tr><td>EVAR</td><td>6</td><td>0</td><td>0</td></tr>
+      <tr><td>GR</td><td>10</td><td>10</td><td>0</td></tr>
+      <tr><td>移植</td><td>40</td><td>40</td><td>40</td></tr>
+      <tr><td>血管pump</td><td>20</td><td>20</td><td>20</td></tr>
+      <tr><td>小児&lt;6歳</td><td>4</td><td>4</td><td>0</td></tr>
+      <tr><td>小児&gt;6歳</td><td>10</td><td>10</td><td>0</td></tr>
+    </table>
+  </div>
+
+  <h3>③ 交差試験採血</h3>
+  <ul>
+    <li>前日日付でオーダー（計2回必要）</li>
+    <li>月曜症例は前週金曜にオーダー</li>
+  </ul>
+
+  <h3>④ 麻酔科</h3>
+  <p>術前2日前、入院中外来で予約。枠がない場合は前日で。その他外来（5173-6130）</p>
+
+  <h3>⑤ 歯科</h3>
+
+  <h3>⑥ 腸管前処置</h3>
+  <ul>
+    <li>前日眠前プルゼニド2T</li>
+    <li>開腹症例（GR）はプロトコル通り（フォルダ007「AAA術前」を基準日4日前で）</li>
+  </ul>
+
+  <h3>⑦ 帰室後採血</h3>
+  <p>フォルダ → 002採血 → adult術後 or 血管術後</p>
+
+  <h3>⑧ 術後評価（術後1週間前後）</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>術式</th><th>術後評価</th></tr>
+      <tr><td>全症例</td><td>術後1週間頃にECG（EVAR/TEVARも）</td></tr>
+      <tr><td>弁置換/弁形成、心停止を要した血管手術</td><td>心エコー（TAVIは不要）</td></tr>
+      <tr><td>CABG</td><td>冠動脈CT（エコーは原則不要）</td></tr>
+      <tr><td>大血管</td><td>胸腹部造影CT（読影依頼）、頭部MRI・MRA（頭頸部分枝を操作したもの：友紘会）、ABI</td></tr>
+      <tr><td>TAVI</td><td>仮性瘤評価（フォルダ080手配師 → 008 TAVI術後血管エコー）</td></tr>
+    </table>
+  </div>
+  <ul>
+    <li>TAR/GR系は5〜7日後。EVAR/TEVAR後のCTは3〜5日後</li>
+    <li><strong>注意：eGFR &lt; 40 or 造影剤アレルギー/喘息既往の造影CTは注意（特にGR症例はCKD多し）</strong></li>
+    <li>循環器内科主科のTAVI・MitraClipは手術入力のみ</li>
+  </ul>
+
+  <h3>⑨ ICU申し込み</h3>
+  <ul>
+    <li>ICU入室症例のみ。入院履歴から入力</li>
+    <li>小児：NICU（NICUから出棟した場合）or ICU（shunt・ポンプ症例はICU）</li>
+  </ul>
+
+  <h3>⑩ 病棟直帰の場合（末梢血管）</h3>
+  <p>フォルダ078 CVCU直帰</p>
+
+  <h3>⑪ 病棟直帰症例のCVCUカリウム指示</h3>
+  <p>TAVI/TEVAR/EVAR等は、必要時指示のCVCUカリウム指示を入力（手術日に入力）</p>
+
+  <h3>パス適応</h3>
+  <ul>
+    <li>対象：TAVI、EVAR/TEVAR（2-debranchまで）</li>
+    <li>削除方法：『パスオーバービュー』の左上のパスコードや適応基準を右クリック → パス状態変更 → バリアンス登録し終了</li>
+    <li>間違えて登録した場合：バリアンス登録（種別：判別不能、コメント：間違えて登録）</li>
+  </ul>
+
+  <!-- ==================== 緊急手術対応 ==================== -->
+  <h2 id="emergency">緊急手術対応</h2>
+  <div class="note"><strong>超緊急以外は9:30以降に申し込む</strong></div>
+
+  <h3>師長への連絡フォーマット</h3>
+  <pre>全麻○件、局麻○件、お願いします。
+（優先順位1番目からどうぞ）
+病棟（ICUは「東4」と言う）、患者名、年齢、病名、術式。
+（何時間くらいですか）○時間予定です。
+（リクエストは）ないです。
+（転院症例・神経ブロック・スタッフの対応不可能な時間がある場合）○時以降でお願いします。</pre>
+  <ul>
+    <li>全麻：麻酔科 → OP室師長に連絡</li>
+    <li>局麻・VAC：オペ室Nsのみ連絡</li>
+  </ul>
+
+  <h3>緊急手術対応フロー</h3>
+
+  <h4>① 病歴聴取</h4>
+  <ul>
+    <li>氏名、年齢、生年月日（カルテ作成に必要）</li>
+  </ul>
+
+  <h4>② 入院可能なベッドがあるか確認</h4>
+  <ul>
+    <li>ICU師長（iPhone 6013）</li>
+    <li>ICUライター（昼3160/夜3155）</li>
+    <li>西9（師長6029、リーダー6109）</li>
+    <li>救急外来使用時：救命リーダー（i8423）、救命Nsリーダー（i4001）、事務当直（58255）に連絡</li>
+    <li>手術までの収容先を決定しておく</li>
+  </ul>
+
+  <h4>③ 手術室は受け入れ可能か確認</h4>
+  <ul>
+    <li>麻酔科ライター・当直（8223）</li>
+    <li>手術室師長（7813）</li>
+  </ul>
+
+  <h4>④ 手術する？</h4>
+  <p>各チームのライターと相談 → 手術方針決定後、関連スタッフ・B/Cクラス・管理当直に連絡</p>
+
+  <h4>⑤ ID作成</h4>
+  <ul>
+    <li>日中：事務補佐さんへ</li>
+    <li>日勤帯：医事課入院係（5173-5266）</li>
+    <li>当直帯：事務当直（5173-5038・iPhone 8255）</li>
+  </ul>
+
+  <h4>⑥ 各部署に連絡</h4>
+  <p>手術室、ICU、ME（当直7933・日勤5173-6774）</p>
+
+  <h4>⑦ オーダー</h4>
+  <ul>
+    <li>入院予定登録・入院確認</li>
+    <li>手術申込（OR3？マッケベッド？透視）</li>
+    <li>輸血（輸血部5173-5881/当直8230）</li>
+    <li>L/D（感染症・血型・クロス含む）</li>
+    <li>Xp、ECG、頭部CT、全身造影CT（3相）</li>
+    <li>TTE（ハートコール）</li>
+    <li>術中レントゲン/透視（放射線当直7838 call）</li>
+    <li>術後採血</li>
+    <li>※適宜：頭頸部MRI、TEE、血液培養もオーダー</li>
+  </ul>
+
+  <h4>⑧ 患者到着後</h4>
+  <ul>
+    <li>IE等は必要に応じてハートコールTTE</li>
+    <li>IC時間を把握しつつ手術室と入室時間を決める</li>
+    <li>入室時間決定後、各部署（病棟・ME）と担当医に連絡</li>
+    <li>画像取り込み：日勤は事務補佐さんへ、夜間は事務当直へ手渡し</li>
+  </ul>
+
+  <h3>心移植</h3>
+  <ul>
+    <li>入院後：頭部体幹単純CT、心移植直前採血（070）</li>
+    <li>レシピエント入室時間・ドナー心到着時間が決まったら → 手術室師長に連絡 → 緊急手術（日付指定要）でオーダー</li>
+  </ul>
+
+  <!-- ==================== 当直中・緊急受診依頼対応 ==================== -->
+  <h2 id="oncall">当直中・緊急受診依頼対応</h2>
+  <p>患者から直接 or 救急隊 or 受診先病院から入電がある場合</p>
+
+  <h4>① 病歴聴取</h4>
+  <ul>
+    <li>氏名、年齢、生年月日</li>
+    <li>疾患、発症様式と経過</li>
+    <li>Vital sign</li>
+    <li>解離：entry、偽腔開存/血栓閉塞？、解離範囲、上行径/偽腔径、malperfusion、心嚢液、AR、asynergy</li>
+    <li>冠動脈：狭窄部位、collateral</li>
+    <li>Key person</li>
+    <li>ADL/認知機能</li>
+    <li>検査結果（COVID-19, L/D, CT, CAG等）</li>
+    <li>現在の患者状態と緊急度（ICU？総室？酸素？挿管？CVやA-lineなどの挿入物？）</li>
+    <li>緊急連絡先（DrとKey person）</li>
+    <li><strong>受け入れ可能か確認し、必ず返事する旨を伝え、一度電話を切る</strong></li>
+  </ul>
+
+  <h4>② ベッドがあるか確認</h4>
+  <ul>
+    <li>ICUリーダー（iPhone 6104）</li>
+    <li>ICUライター（昼3160/夜3155）</li>
+    <li>西9（師長6029、リーダー6109）</li>
+    <li>他科病状がメインの場合：他科当直に相談</li>
+    <li>救急外来使用時：救命リーダー（4011）、事務当直（58255）に連絡</li>
+  </ul>
+
+  <h4>③ 阪大で受け入れるか、関連病院で受け入れてもらうか</h4>
+  <p>管理当直と相談 → 受け入れ可能の返事後、各部署に連絡</p>
+
+  <h4>④ オーダー</h4>
+  <ul>
+    <li>L/D、Xp、ECG、適宜CT/MRI等</li>
+    <li>入院しそうな場合はコロナ検査も</li>
+  </ul>
+
+  <h4>⑤ 患者到着後</h4>
+  <p>適宜検査施行し、入院処理（入院予定登録・入院確認）</p>
+
+  <!-- ==================== 連絡先一覧 ==================== -->
+  <h2 id="contacts">連絡先一覧</h2>
+
+  <h3>院内主要連絡先</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>部署</th><th>連絡先</th></tr>
+      <tr><td>麻酔科ライター/当直</td><td>iPhone 8223</td></tr>
+      <tr><td>手術室師長（日勤）</td><td>iPhone 7813</td></tr>
+      <tr><td>手術室看護師リーダー（当直）</td><td>iPhone 7815</td></tr>
+      <tr><td>クリーンホール</td><td>3060</td></tr>
+      <tr><td>ME ICU/当直</td><td>iPhone 7930</td></tr>
+      <tr><td>ME 人工心肺担当（日勤）</td><td>内線 5173-6774</td></tr>
+      <tr><td>ME VADコール（日勤）</td><td>iPhone 3458</td></tr>
+      <tr><td>ME ペースメーカー（日勤）</td><td>iPhone 7933</td></tr>
+      <tr><td>輸血部</td><td>内線 173-5881 / 当直 8230</td></tr>
+      <tr><td>事務当直</td><td>PHS 5-8255</td></tr>
+      <tr><td>地域連携室</td><td>5173-509 or PHS 5-5308</td></tr>
+      <tr><td>救命センター当番Dr</td><td>内線 173-5722</td></tr>
+      <tr><td>救命リーダー</td><td>iPhone 4001</td></tr>
+      <tr><td>ICU看護師リーダー（E4）</td><td>iPhone 6104</td></tr>
+      <tr><td>ICU師長</td><td>6013</td></tr>
+      <tr><td>ICUライター（日勤/夜勤）</td><td>3160 / 3155</td></tr>
+      <tr><td>西9階病棟師長（日勤）</td><td>iPhone 6029</td></tr>
+      <tr><td>西9階病棟リーダー（当直）</td><td>iPhone 6109</td></tr>
+      <tr><td>東9病棟</td><td>5173-6340 / リーダー 6124</td></tr>
+      <tr><td>東3階病棟</td><td>173-6137</td></tr>
+      <tr><td>東6階病棟</td><td>173-6220</td></tr>
+      <tr><td>西6階病棟</td><td>173-6240</td></tr>
+      <tr><td>外科外来</td><td>173-5401</td></tr>
+      <tr><td>心エコー室</td><td>5173-6610</td></tr>
+      <tr><td>藤田さん（心エコー）</td><td>3748</td></tr>
+    </table>
+  </div>
+
+  <h3>循環器内科コンサルト</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>内容</th><th>連絡先</th></tr>
+      <tr><td>緊急</td><td>ハートコール 7000</td></tr>
+      <tr><td>入院中の症例</td><td>中本Dr 7002</td></tr>
+      <tr><td>虚血</td><td>松廣Dr 3745</td></tr>
+      <tr><td>CAG</td><td>中村Dr 3728</td></tr>
+      <tr><td>RHC/RHC+CAG</td><td>赤澤Dr 2002、中村Dr 3728</td></tr>
+      <tr><td>TEE</td><td>竹田Dr 2818</td></tr>
+      <tr><td>Pacemaker</td><td>岡Dr 2010、小津Dr 7008</td></tr>
+    </table>
+  </div>
+
+  <h3>その他連絡先</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>内容</th><th>連絡先</th></tr>
+      <tr><td>卒中内科コール</td><td>7369（Willis読影：藤堂先生2450・岡崎先生7424）</td></tr>
+      <tr><td>緊急CT（頭以外）</td><td>2630</td></tr>
+      <tr><td>緊急CT（頭部）</td><td>7830</td></tr>
+      <tr><td>緊急頭部MRI</td><td>2627</td></tr>
+      <tr><td>Adamkiewicz動脈読影</td><td>IVR小野先生 7701、東原先生 7710</td></tr>
+      <tr><td>医事課入院係（ID作成・日勤帯）</td><td>内線 173-5266</td></tr>
+      <tr><td>事務当直（ID作成・当直帯）</td><td>内線 173-5038・PHS 8255</td></tr>
+    </table>
+  </div>
+
+  <h3>業者連絡先</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>業者</th><th>担当</th><th>連絡先</th></tr>
+      <tr><td>テルモ</td><td>白石</td><td>080-1005-7213（ハイドロフィット）</td></tr>
+      <tr><td>SJM</td><td>橋田</td><td>090-6815-9797（PM）</td></tr>
+      <tr><td>SJM</td><td>郷田</td><td>090-5273-4274（Tailor Band）</td></tr>
+      <tr><td>Abbott</td><td>加藤</td><td>090-2148-0137（機械弁）</td></tr>
+      <tr><td>日本光電</td><td>津田</td><td>06-6386-1308</td></tr>
+      <tr><td>Medtronic</td><td>小川</td><td>080-2072-6028</td></tr>
+      <tr><td>Medtronic</td><td>川島</td><td>090-5120-1925（PM）</td></tr>
+      <tr><td>Medtronic</td><td>白石</td><td>090-5810-3398（MICS・HVAD関連）</td></tr>
+      <tr><td>センチュリー</td><td>青山</td><td>080-5913-2344</td></tr>
+      <tr><td>小西医療機器</td><td>久保</td><td>080-5764-1353（チトウッドクランプ）</td></tr>
+      <tr><td>ニプロ</td><td>中園</td><td>080-1525-1292（Heart Mate）</td></tr>
+      <tr><td>エチコン</td><td>—</td><td>080-1287-1888</td></tr>
+      <tr><td>泉工</td><td>片山</td><td>090-8118-7639</td></tr>
+      <tr><td>ABIOMED</td><td>高山</td><td>080-3125-9883（Impella）</td></tr>
+    </table>
+  </div>
+
+  <!-- ==================== その他 ==================== -->
+  <h2 id="misc">その他</h2>
+
+  <h3>MMカンファ（年3回）</h3>
+  <p>目安：3月（1〜3月分）、9月（4〜8月分）、12月（9〜12月分）</p>
+  <p><strong>準備内容（ppt作成）：</strong></p>
+  <ul>
+    <li>症例数</li>
+    <li>手術死亡・院内死亡</li>
+    <li>合併症（気切・脳梗塞・再開胸・PMI）</li>
+    <li>議題にあがる症例の基本情報</li>
+  </ul>
+  <p><strong>データ収集：</strong></p>
+  <ul>
+    <li>血管チーム・TAVI（循内症例含む）：データをいただく</li>
+    <li>成人・小児チーム：自分で集計（福島秘書が個人的に作成しているデータをいただくと早い）→ スタッフに最終確認</li>
+    <li>カンファ当日はICU責任者を呼ぶ（日程が決まったらまず連絡を）</li>
+  </ul>
+
+  <h3>手術スケジュールの組み方</h3>
+  <p>以下を考慮して組み合わせる：</p>
+  <ul>
+    <li><strong>患者</strong>：抗血小板・抗凝固薬の休薬期間、術前処置・術前検査の完了状況</li>
+    <li><strong>術者</strong>：その術式が可能な術者か、術者のスケジュール（外来・外勤）</li>
+    <li><strong>枠</strong>：MICS-AVR・simple EVAR・simple TEVARは半日枠、MICS/DaVinci/Redoは1日枠</li>
+  </ul>
+
+  <h3>手配師交代時</h3>
+  <p>友紘会病院の心臓外科 <strong>光野先生（mitsuno@yukoukai.com）にメール</strong></p>
+  <ul>
+    <li>毎週木曜日に友紘会造影CT枠を確保していただいている（当面はCABG術後のみ）</li>
+    <li>友紘会依頼手順：マニュアル『心臓外科2022 → 外来検査調整・検査依頼方法』参照</li>
+    <li>造影CT後の夜間に光野先生より手配師に連絡があるため、メール確認を</li>
+  </ul>
+
+  <h3>他科症例の空き枠対応</h3>
+  <ol>
+    <li>心外手術室担当（島村Dr.）に手術室空き枠メールが届く</li>
+    <li>空き枠を出した他科手術室担当Dr.に連絡（仮押さえでも可）</li>
+    <li>麻酔科と交渉・承諾を得たら</li>
+    <li>該当他科担当Dr.に再度連絡</li>
+    <li>島村Dr.に空き枠取得メールの送信を依頼</li>
+    <li>通常通り予定手術オーダー</li>
+  </ol>
+  <div class="note">※手術予定入力の〆切後は基本難しい（手術室師長と交渉すれば可能なことも）</div>
+
+  <h3>ハートシート・iPSシート関連</h3>
+  <p>移植前後の検査（予約困難順）：</p>
+  <ol>
+    <li><strong>負荷アンモニアPET</strong>（第1 or 3月曜 15〜16時頃）→ 核医学 渡部Dr.（i2772）に空き枠確認後クローズオーダー（予約は2週間前締め切り）</li>
+    <li><strong>心臓造影MRI</strong>（毎週木曜）→ 検査予約係担当医（i7712）に確認後クローズオーダー</li>
+    <li><strong>胸部造影CT</strong>（毎週木曜）→ クローズで胸部造影CT（コメントで「木曜午前の枠でお願いします」）</li>
+    <li><strong>ミトコンドリアシンチ</strong>（月・木が検査日）→ 太田垣Dr.（i3747）に依頼</li>
+    <li>エルゴ、ホルター → 通常通り予約（枠なければ外来枠使用も考慮）</li>
+    <li>CAG、RHC → 循環器内科医師に依頼</li>
+  </ol>
+  <div class="note"><strong>全検査調整に数日かかるため、1ヶ月以上前からの調整が必要</strong></div>
+
+  <h3>治験関係（ハートシートなど）</h3>
+  <p>術前・術後定期検査症例について、日程や検査内容をCRCと相談して決める</p>
+  <p>主な検査内容：</p>
+  <ul>
+    <li>採血・胸部Xp・心電図（通常入院と同様）</li>
+    <li>カテコラミン採血（総カテコラミン、11カテコラミン分画、尿中カテコラミン分画（塩酸蓄尿））</li>
+    <li>ホルター心電図</li>
+    <li>エルゴ負荷心電図</li>
+    <li>胸部造影CT（心電図同期でLVEF/EDV/ESV評価）→ 木曜午前 濱田先生枠（クローズ後：宮田先生7648に電話）</li>
+    <li>心臓造影MRI：①宮田Dr. 7648 ②柳川Dr. 7649</li>
+    <li>心筋MIBGシンチ（安静時spect）</li>
+    <li>心カテ（右心カテ・左室内圧測定・CAG）</li>
+  </ul>
+
+  <h3>転院調整（他院 → 阪大）</h3>
+  <ol>
+    <li>状態・手術の必要度・緊急度を把握し、スタッフ・師長らと相談（病棟・ICUの空き状況を勘案）</li>
+    <li>基本、紹介状をFAXで送ってもらってから、ID作成を事務補佐さんに依頼
+      <ul><li>緊急の場合：氏名・生年月日のみでOK</li></ul>
+    </li>
+    <li>ID作成連絡先
+      <ul>
+        <li>日勤帯：医事課入院係（内線 173-5266）</li>
+        <li>当直帯：事務当直（内線 173-5038・PHS 8255）</li>
+      </ul>
+    </li>
+  </ol>
+
+</main>
+
+<!-- Back to top -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="トップへ戻る">↑</button>
+
+<script>
+  // ===== SEARCH =====
+  let matches = [], matchIdx = 0;
+  const searchInput = document.getElementById('search-input');
+  const searchCount = document.getElementById('search-count');
+  const contentRoot = document.getElementById('main');
+
+  searchInput.addEventListener('input', doSearch);
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') moveMatch(e.shiftKey ? -1 : 1);
+    if (e.key === 'Escape') clearSearch();
+  });
+
+  function doSearch() {
+    const q = searchInput.value.trim();
+    clearHighlights();
+    matches = []; matchIdx = 0;
+    if (!q) { searchCount.textContent = ''; return; }
+    highlight(contentRoot, q);
+    matches = Array.from(contentRoot.querySelectorAll('mark.search-hl'));
+    searchCount.textContent = matches.length ? '1/' + matches.length : '0件';
+    if (matches.length) { matchIdx = 0; setCurrent(0); }
+  }
+
+  function highlight(node, q) {
+    if (node.nodeType === 3) {
+      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      const re = new RegExp(escaped, 'gi');
+      if (!re.test(node.textContent)) return;
+      const frag = document.createDocumentFragment();
+      const parts = node.textContent.split(new RegExp('(' + escaped + ')', 'gi'));
+      parts.forEach(p => {
+        if (new RegExp('^' + escaped + '$', 'i').test(p)) {
+          const mark = document.createElement('mark');
+          mark.className = 'search-hl';
+          mark.textContent = p;
+          frag.appendChild(mark);
+        } else {
+          frag.appendChild(document.createTextNode(p));
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if (node.nodeType === 1 && !['SCRIPT','STYLE','INPUT'].includes(node.tagName)) {
+      Array.from(node.childNodes).forEach(c => highlight(c, q));
+    }
+  }
+
+  function clearHighlights() {
+    contentRoot.querySelectorAll('mark.search-hl').forEach(m => {
+      m.parentNode.replaceChild(document.createTextNode(m.textContent), m);
+    });
+    contentRoot.normalize();
+  }
+
+  function setCurrent(i) {
+    matches.forEach(m => m.classList.remove('current'));
+    if (!matches.length) return;
+    matches[i].classList.add('current');
+    matches[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    searchCount.textContent = (i+1) + '/' + matches.length;
+  }
+
+  function moveMatch(dir) {
+    if (!matches.length) return;
+    matchIdx = (matchIdx + dir + matches.length) % matches.length;
+    setCurrent(matchIdx);
+  }
+
+  function clearSearch() {
+    searchInput.value = '';
+    clearHighlights();
+    matches = []; matchIdx = 0;
+    searchCount.textContent = '';
+  }
+
+  // Sidebar toggle (mobile)
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('overlay');
+    sb.classList.toggle('open');
+    ov.classList.toggle('visible');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('visible');
+  }
+
+  // Desktop sidebar toggle
+  const menuBtn = document.getElementById('menu-toggle');
+  const main = document.getElementById('main');
+  const sidebar = document.getElementById('sidebar');
+  let sidebarOpen = true;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // On desktop, add toggle to title area
+    if (window.innerWidth >= 769) {
+      menuBtn.style.display = 'block';
+      menuBtn.onclick = () => {
+        sidebarOpen = !sidebarOpen;
+        sidebar.classList.toggle('hidden', !sidebarOpen);
+        main.classList.toggle('full', !sidebarOpen);
+      };
+    }
+  });
+
+  // Active link tracking
+  const headings = document.querySelectorAll('h2[id], h3[id]');
+  const links = document.querySelectorAll('#sidebar a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`#sidebar a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+  headings.forEach(h => observer.observe(h));
+
+  // Back to top button
+  const backTop = document.getElementById('back-top');
+  window.addEventListener('scroll', () => {
+    backTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+  });
+
+  // Close sidebar on link click (mobile)
+  links.forEach(l => l.addEventListener('click', () => {
+    if (window.innerWidth < 769) closeSidebar();
+  }));
+</script>
+</body>
+</html>
