@@ -26,8 +26,12 @@
     background: var(--table-header); color: #fff; display: flex; align-items: center;
     padding: 0 16px; z-index: 200; gap: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.25);
   }
-  #topbar h1 { font-size: 15px; font-weight: 700; flex: 1; }
-  #menu-toggle { background: none; border: none; color: #fff; cursor: pointer; padding: 6px; font-size: 22px; line-height: 1; }
+  #topbar h1 { font-size: 15px; font-weight: 700; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #menu-toggle { background: none; border: none; color: #fff; cursor: pointer; padding: 6px; font-size: 22px; line-height: 1; flex-shrink: 0; }
+  @media (max-width: 480px) {
+    #topbar h1 { font-size: 12px; }
+    #search-input { width: 80px; }
+  }
 
   /* Search bar */
   #search-wrap { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,.15); border-radius: 6px; padding: 2px 8px; }
